@@ -25,7 +25,7 @@
         id (first (filter (comp not nil?)
                           (map (comp :id :attrs)
                                nodes)))]
-    [id {:input (read-vars input)
+    [(edn/read-string id) {:input (read-vars input)
          :state (read-vars state)
          :combinatorial (read-vars combinatorial)}]))
 
@@ -36,8 +36,7 @@
        (first)
        (select :node)
        (map parse-node)
-       (into (sorted-map-by #(apply compare
-                                    (map edn/read-string %&))))))
+       (into (sorted-map))))
 
 (defn load-trace
   [path]
