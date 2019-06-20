@@ -1,44 +1,48 @@
 (ns smvtrcviz.trace-mapping
   (:require [hiccup.core :as hiccup]
-            [clojure.set :as set]))
-
-(defmacro ^:private zip [l1 l2] `(map vector ~l1 ~l2))
+            [clojure.set :as set])
+  (:use smvtrcviz.util))
 
 (defn ^:private get-all-vars
   [trace key]
-  (let [vars (reduce #(set/union %1 (into #{} (keys %2)))
-                     #{}
-                     (map (comp key second) trace))]
-    (into {} (zip vars (range)))))
+  (apply set/union (map (comp key second) trace)))
 
-(defn ^:private vars-to-partial-row
-  [vars-indices vars]
-  (let [base (mapv (constantly [:td])
-                   (range (count vars-indices)))]
-    (reduce #(let [[var val] %2]
-               (assoc %1 (vars-indices var) [:td val]))
-            base
-            vars)))
+(defn- prettyv-vars
+  [trace group var-name]
+  (let [vals (mapv (comp #(get % var-name) group second)
+                   trace)]
+    ; TODO: pretty-print results and omit duplicates
+    (reduce conj [] vals)))
 
-(defn ^:private step-to-row
-  [vars-indices step]
-  [:tr (apply concat (map #(vars-to-partial-row (% vars-indices) (% step))
-                          '(:input :state :combinatorial)))])
+(defn- var-to-row
+  [trace group var-name]
+  (conj (map #(vector :td %) (prettyv-vars trace group var-name))
+        [:th var-name]))
 
 (defn trace2table
   [trace]
-  (let [vars (apply hash-map
-                    (apply concat
-                           (map #(vector % (get-all-vars trace %))
-                                '(:input :state :combinatorial))))]
-    (hiccup/html [:table [:tr [:th {:colspan (count (:input vars))} "Inputs"]
-                          [:th {:colspan (count (:state vars))} "State Variables"]
-                          [:th {:colspan (count (:combinatorial vars))} "Combinatorials"]]
-                  [:tr (map #(vector :th %)
-                            (apply concat (map (comp (partial map first)
-                                                     (partial sort-by second))
-                                               (list (:input vars)
-                                                     (:state vars)
-                                                     (:combinatorial vars)))))]
-                  (map (partial step-to-row vars)
-                       (vals trace))])))
+  (let [vars (reduce #(assoc %1 %2 (get-all-vars trace %2))
+                     {}
+                     '(:input :state :combinatorial))
+        dummy-row (mapv (constantly [:td "..."])
+                        (range (count trace)))
+        rows (-> (update-map #(map (partial var-to-row trace %1) (keys %2))
+                             vars)
+                 (update :input
+                         (partial map (partial update-tail
+                                               #(interleave-strict dummy-row %))))
+                 (update :state
+                         (partial map (partial update-tail
+                                               #(interleave-strict %
+                                                                   dummy-row))))
+                 (update :combinatorial
+                         (partial map (partial update-tail
+                                               #(interleave-strict % dummy-row)))))
+        print-rows (fn [group]
+                     (map (comp pop (partial into []) #(cons :tr %))
+                          (sort-by (comp second first)
+                                   (group rows))))]
+    (hiccup/html [:table
+                  (print-rows :input)
+                  (print-rows :state)
+                  (print-rows :combinatorial)])))
