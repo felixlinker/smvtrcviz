@@ -1,7 +1,13 @@
 (ns smvtrcviz.core
+  (:require [smvtrcviz.trace-parsing :as parsing]
+            [smvtrcviz.trace-mapping :as mapping])
   (:gen-class))
 
 (defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+  "Read a trace as .xml input file and pretty-print it into an .html output
+file."
+  [input output]
+  (->> input
+       (parsing/load-trace)
+       (mapping/trace2table)
+       (spit output)))
