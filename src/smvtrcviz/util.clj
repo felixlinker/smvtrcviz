@@ -19,3 +19,10 @@
   [f l]
   (let [[head & tail] l]
     (conj (f tail) head)))
+
+(defn peek-not-nil
+  [col]
+  (let [p (peek col)]
+    (if (and (nil? p) (not (empty? col)))
+      (peek-not-nil (pop col))
+      p)))
