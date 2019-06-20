@@ -3,7 +3,7 @@
             [clojure.set :as set])
   (:use smvtrcviz.util))
 
-(defn ^:private get-all-vars
+(defn- get-all-vars
   [trace key]
   (apply set/union (map (comp key second) trace)))
 

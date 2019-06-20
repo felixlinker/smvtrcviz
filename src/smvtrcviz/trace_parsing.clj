@@ -3,12 +3,12 @@
             [clojure.xml :as xml]
             [clojure.edn :as edn]))
 
-(defn ^:private select
+(defn- select
   [tag xml]
   (filter #(= (:tag %) tag)
           (or (:content xml) xml)))
 
-(defn ^:private read-vars
+(defn- read-vars
   [node]
   (let [values (select :value (:content node))]
     (into {}
@@ -17,7 +17,7 @@
                   (first (:content value-node))])
                values))))
 
-(defn ^:private parse-node
+(defn- parse-node
   [node-xml]
   (let [nodes (map (comp first #(select % node-xml))
                    '(:state :combinatorial :input))
