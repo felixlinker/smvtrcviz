@@ -9,7 +9,7 @@
   (let [vars (reduce #(set/union %1 (into #{} (keys %2)))
                      #{}
                      (map (comp key second) trace))]
-    (into (sorted-map) (zip vars (range)))))
+    (into {} (zip vars (range)))))
 
 (defn ^:private vars-to-partial-row
   [vars-indices vars]
@@ -35,7 +35,8 @@
                           [:th {:colspan (count (:state vars))} "State Variables"]
                           [:th {:colspan (count (:combinatorial vars))} "Combinatorials"]]
                   [:tr (map #(vector :th %)
-                            (apply concat (map keys
+                            (apply concat (map (comp (partial map first)
+                                                     (partial sort-by second))
                                                (list (:input vars)
                                                      (:state vars)
                                                      (:combinatorial vars)))))]
