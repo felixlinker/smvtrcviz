@@ -72,7 +72,7 @@ certain group, e.g. :state."
 (defn- collect-vars-for
   [trace group]
   (loop [step 1
-         var-traces {}]
+         var-traces (sorted-map)]
     (let [vars (group (trace step))
           base (into [] (range (- step 1)))]
       (if vars
