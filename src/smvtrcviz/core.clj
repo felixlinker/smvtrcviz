@@ -19,9 +19,8 @@
 (defn- read-stdin
   "Read from stdin until EOF and return results as string."
   []
-  (do (println "(reading from stdin)")
-      (string/join \newline
-                   (line-seq (java.io.BufferedReader. *in*)))))
+  (string/join \newline
+               (line-seq (java.io.BufferedReader. *in*))))
 
 (defn -main
   "Read a trace as .xml input file and pretty-print it into an .html output
