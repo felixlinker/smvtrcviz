@@ -71,12 +71,13 @@ certain group, e.g. :state."
 
 (defn- collect-vars-for
   [trace group]
-  (loop [step 1
+  (loop [t trace
+         base []
          var-traces (sorted-map)]
-    (let [vars (group (trace step))
-          base (into [] (range (- step 1)))]
+    (let [vars (group (first t))]
       (if vars
-        (recur (inc step)
+        (recur (rest t)
+               (conj base nil)
                (reduce-kv #(assoc %1 %2 (conj (get %1 %2 base)
                                               %3))
                           var-traces

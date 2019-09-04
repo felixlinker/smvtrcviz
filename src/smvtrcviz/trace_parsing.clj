@@ -1,7 +1,6 @@
 (ns smvtrcviz.trace-parsing
   (:require [clojure.zip :as zip]
-            [clojure.data.zip.xml :as zip-xml]
-            [clojure.edn :as edn]))
+            [clojure.data.zip.xml :as zip-xml]))
 
 (defn- read-vars
   "Transform all <value> nodes of a <state> or <input> or <combinatorial> node
@@ -24,20 +23,15 @@ of that type."
                  keys))))
 
 (defn parse-trace
-  "Parse a SMV-XML-trace into a map."
+  "Parse a SMV-XML-trace into a seq of maps."
   [xml-zipper]
   (let [nodes (zip-xml/xml-> xml-zipper
                              :counter-example
                              :node)]
-    (zipmap (map (comp edn/read-string
-                       #(zip-xml/xml1-> %
-                                        :state
-                                        (zip-xml/attr :id)))
-                 nodes)
-            (map parse-node nodes))))
+    (map parse-node nodes)))
 
 (defn load-trace
-  "Load a SMV-XML-trace from a file and parse it into a map."
+  "Load a SMV-XML-trace from a file and parse it into a seq of maps."
   [path]
   (-> path
       (zip/xml-zip)
