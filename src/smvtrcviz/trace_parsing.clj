@@ -24,15 +24,10 @@ of that type."
 
 (defn parse-trace
   "Parse a SMV-XML-trace into a seq of maps."
-  [xml-zipper]
-  (let [nodes (zip-xml/xml-> xml-zipper
-                             :counter-example
-                             :node)]
-    (map parse-node nodes)))
-
-(defn load-trace
-  "Load a SMV-XML-trace from a file and parse it into a seq of maps."
-  [path]
-  (-> path
-      (zip/xml-zip)
-      (parse-trace)))
+  [xml]
+  (as-> xml xml
+    (zip/xml-zip xml)
+    (zip-xml/xml-> xml
+                   :counter-example
+                   :node)
+    (map parse-node xml)))

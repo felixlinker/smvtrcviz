@@ -33,6 +33,6 @@ file."
                                (-> (io/input-stream i)
                                    (xml/parse))))]
              (->> input-xml
-                  (parsing/load-trace)
+                  (parsing/parse-trace)
                   (mapping/trace2table)
                   (println))))))
