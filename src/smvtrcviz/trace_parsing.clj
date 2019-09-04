@@ -1,7 +1,5 @@
 (ns smvtrcviz.trace-parsing
-  (:require [clojure.java.io :as io]
-            [clojure.data.xml :as xml]
-            [clojure.zip :as zip]
+  (:require [clojure.zip :as zip]
             [clojure.data.zip.xml :as zip-xml]
             [clojure.edn :as edn]))
 
@@ -42,7 +40,5 @@ of that type."
   "Load a SMV-XML-trace from a file and parse it into a map."
   [path]
   (-> path
-      (io/input-stream)
-      (xml/parse)
       (zip/xml-zip)
       (parse-trace)))
