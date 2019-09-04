@@ -1,0 +1,11 @@
+\begin{table}
+    \begin{tabular}{| l | r c c c c | c c c c c |}
+        \hline
+        & & \minrv{0} & \minrv{1} & \minrv{2} & \minrv{3} & \minrv{p} & \minrv{0c} & \minrv{0p} & \minrv{1c} & \minrv{1p} \\
+        \hline
+        <% for step in steps %>
+        <{step.instr|mc2}> & \minrv{r} & <{step.r0}> & <{step.r1}> & <{step.r2}> & <{step.r3}> & <{step.priv|mc2}> & <{step.caching0|mc2}>  & <{step.priv0|mc2}> & <{step.caching1|mc2}> & <{step.priv1|mc2}> \\ & \minrv{m} & <{step.m0}> & <{step.m1}> & <{step.m2}> & <{step.m3}> &&&&& \\
+        \hline
+        <% endfor %>
+    \end{tabular}
+\end{table}

@@ -5,17 +5,28 @@
 (def ^:private bvr #"(-?)0(s|u)d(\d+)_(\d+)")
 
 (defn- resize
-  "Resizes a string as a bit-vector to a given length. If it is signed and the
+  "Resizes a string as a bit-vector to a given length. If it is negative and the
 bit-str is shorter than len, the leftmost bit will be used to extend the
 string."
-  [bit-str len signed]
+  [bit-str len negative]
   (let [subsfrom (- (count bit-str) len)]
     (if (neg? subsfrom)
-      (apply str (concat (repeat (Math/abs subsfrom) (if signed
+      (apply str (concat (repeat (Math/abs subsfrom) (if negative
                                                        (first bit-str)
                                                        \0))
                          (list bit-str)))
       (subs bit-str subsfrom))))
+
+(defn parse-smv-bitval
+  [value]
+  (let [match (re-matches bvr value)]
+    (if (nil? match)
+      nil
+      (let [[_ sign type size-str num-val-str] match
+            negative (and (= type "s") (not (empty? sign)))
+            size (edn/read-string size-str)]
+        {:size size
+         :num-value (* (edn/read-string num-val-str) (if negative -1 1))}))))
 
 (defn- pretty-print
   "Tries to parse a bit-vector as binary string; if this fails, value is
@@ -23,14 +34,10 @@ returned unchanged."
   [value]
   (if (nil? value)
     "..."
-    (let [match (re-matches bvr value)]
-      (if (nil? match)
+    (let [{:keys [size num-value]} (parse-smv-bitval value)]
+      (if (nil? num-value)
         value
-        (let [[_ sign type size-str num-val-str] match
-              signed (and (not (empty? sign)) (= type "s"))
-              size (edn/read-string size-str)
-              num-val (* (edn/read-string num-val-str) (if signed -1 1))]
-          (resize (Integer/toBinaryString num-val) size signed))))))
+        (resize (Integer/toBinaryString num-value) size (< num-value 0))))))
 
 (defn- remove-duplicate-vars
   [var-history]

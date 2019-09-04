@@ -4,12 +4,17 @@
             [clojure.java.io :as io]
             [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
+            [smvtrcviz.trace-mapping.minrv8 :as tex-mapping]
             [smvtrcviz.trace-mapping :as mapping])
   (:gen-class))
 
 (def cli-opts
   [["-i" "--input FILE" "Set input file"]
-   ["-h" "--help" "Print help"]])
+   ["-h" "--help" "Print help"]
+   ["-m" "--mode MODE" "Set the output mode; default: HTML"
+    :validate [#(contains? #{"MINRV8" "HTML"} %)
+               "Mode must be either MINRV8 or HTML"]
+    :default "HTML"]])
 
 (defn- read-stdin
   "Read from stdin until EOF and return results as string."
@@ -31,8 +36,11 @@ file."
                                (-> (read-stdin)
                                    (xml/parse-str))
                                (-> (io/input-stream i)
-                                   (xml/parse))))]
+                                   (xml/parse))))
+                 mapper (if (= (:mode options) "HTML")
+                          mapping/trace2table
+                          tex-mapping/trace2tex)]
              (->> input-xml
                   (parsing/parse-trace)
-                  (mapping/trace2table)
+                  (mapper)
                   (println))))))

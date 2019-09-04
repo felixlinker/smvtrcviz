@@ -7,6 +7,7 @@
                  [org.clojure/tools.cli "0.4.2"]
                  [org.clojure/data.xml "0.2.0-alpha6"]
                  [org.clojure/data.zip "0.1.3"]
+                 [selmer "1.12.15"]
                  [hiccup "1.0.5"]]
   :main ^:skip-aot smvtrcviz.core
   :target-path "target/%s"
