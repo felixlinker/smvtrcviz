@@ -1,6 +1,6 @@
-(defproject smvtrcviz "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject smvtrcviz "0.1.0"
+  :description "A command line tool to map XML traces from nuXmv to HTML tables"
+  :url "https://github.com/felixlinker/smvtrcviz"
   :license {:name "The MIT License (MIT)"
             :url "https://mit-license.org/"}
   :dependencies [[org.clojure/clojure "1.10.0"]
