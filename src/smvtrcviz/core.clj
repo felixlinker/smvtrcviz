@@ -6,8 +6,8 @@
 (defn -main
   "Read a trace as .xml input file and pretty-print it into an .html output
 file."
-  [input output]
+  [input]
   (->> input
        (parsing/load-trace)
        (mapping/trace2table)
-       (spit output)))
+       (println)))
