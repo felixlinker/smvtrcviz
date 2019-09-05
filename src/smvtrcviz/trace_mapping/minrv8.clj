@@ -67,7 +67,7 @@
    :m2 (parse-labels state-map "memory_conf[0]" "memory_integrity[0]")
    :m3 (parse-labels state-map "memory_conf[0]" "memory_integrity[0]")
    :priv (if (= (state-map "priv") "TRUE") "M" "U")
-   :chaching0 (parse-caching state-map 0)
+   :caching0 (parse-caching state-map 0)
    :caching1 (parse-caching state-map 1)
    :priv0 (parse-mem-privs state-map 0)
    :priv1 (parse-mem-privs state-map 1)})
