@@ -5,7 +5,7 @@
  "SUB" "Sub <{rd}>, <{rs1}>, <{rs2}>"
  "AND" "And <{rd}>, <{rs1}>, <{rs2}>"
  "OR" "Or <{rd}>, <{rs1}>, <{rs2}>"
- "MOV" "Mov <{rd}>, <{r1}>"
+ "MOV" "Mov <{rd}>, <{rs1}>"
  "SLL" "Sll <{rd}>, <{rs1}>, <{rs2}>"
  "SRA" "Sra <{rd}>, <{rs1}>, <{rs2}>"
  "SLT" "Slt <{rd}>, <{rs1}>, <{rs2}>"
