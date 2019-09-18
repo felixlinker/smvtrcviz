@@ -15,7 +15,7 @@
  "CSRRC" "Csrrc <{rd}>, <{rs1}>, <{rs2}>"
  "CLR" "Clr"
  "SAN" "San"
- "SPSEL" "Spsel"
- "SPSET" "Spset"
+ "SPSEL" "Spsel <{rs1}>"
+ "SPSET" "Spset <{rs1}>"
  "PUSH" "Push <{rs1}>"
  "POP" "Pop <{rd}>"}
