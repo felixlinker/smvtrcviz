@@ -70,7 +70,35 @@
    :caching0 (parse-caching state-map 0)
    :caching1 (parse-caching state-map 1)
    :priv0 (parse-mem-privs state-map 0)
-   :priv1 (parse-mem-privs state-map 1)})
+   :priv1 (parse-mem-privs state-map 1)
+   :sp0 (edn/read-string (state-map "sp[0]"))
+   :sp1 (edn/read-string (state-map "sp[1]"))
+   :spsel (edn/read-string (state-map "sp_sel"))})
+
+(defn- merge-sps
+  [spsel-val sp0-val sp1-val step]
+  ; The keys fetched from step differ from the first three arguments in that
+  ; they might be nil indicating that nothing has changed; however, we sometimes
+  ; need the unchanged values as well which is why we get both here
+  (let [{:keys [sp0 sp1 spsel]} step
+        ; Takes a memory index and transforms it into the respective key;
+        ; e.g. 0 -> :m0
+        i2memk #(keyword (str "m" %))
+        ; Takes the sp index and returns a function that updates the memory
+        ; value
+        update-i (fn [i]
+                   ; underline the sp-index if it is currently targeted
+                   #(let [i' (if (= spsel-val i)
+                               (str "\\underline{" i "}")
+                               i)
+                          ; if the memory value didn't change, use {} as base
+                          m (if (nil? %)
+                              "{}"
+                              %)]
+                      (str "$ " m "^{" i' "} $")))]
+    (cond-> step
+      (not (nil? (or sp0 spsel))) (update (i2memk sp0-val) (update-i 0))
+      (not (nil? (or sp1 spsel))) (update (i2memk sp1-val) (update-i 1)))))
 
 (defn- remove-duplicates
   [steps]
@@ -94,10 +122,18 @@
   (as-> trace t
     (let [instrs (->> (map :input t)
                       (map input2instr)
-                      (map (fn [c] {:instr c})))
+                      (map (fn [c] {:instr c}))
+                      (#(conj % {}))
+                      (remove-duplicates))
           states (->> t
                       (map :state)
-                      (map state2step))]
+                      (map state2step))
+          states' (->> states
+                       (remove-duplicates)
+                       (map merge-sps
+                            (map :spsel states)
+                            (map :sp0 states)
+                            (map :sp1 states)))]
       (selmer/render-file "minrv8-trace.tex"
-                          {:steps (remove-duplicates (map merge states (conj instrs {})))}
+                          {:steps (map merge states' instrs)}
                           selmer-opts))))
